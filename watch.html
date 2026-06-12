@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>WCS26 • Regarder le match</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23ffaa33'/%3E%3Ctext x='50' y='68' text-anchor='middle' fill='white' font-size='44' font-weight='bold' font-family='Arial'%3E🏆%3C/text%3E%3C/svg%3E" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #050505;
+      --surface: #0a0a0a;
+      --card: rgba(20, 20, 25, 0.7);
+      --line: rgba(255, 255, 255, 0.08);
+      --text: #f5f5f5;
+      --sub: #a0a0a0;
+      --muted: #666;
+      --accent: #ffaa33;
+      --accent-dark: #ff7744;
+      --accent-glow: rgba(255, 170, 51, 0.4);
+      --radius-lg: 24px;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      background-image: radial-gradient(circle at 50% 0%, #1a0f08 0%, var(--bg) 80%);
+      background-attachment: fixed;
+      color: var(--text);
+    }
+
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(5, 5, 5, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--line);
+      padding: 1rem 1.8rem;
+    }
+
+    .nav-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 2rem;
+      letter-spacing: -1px;
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .logo-icon { font-size: 2.2rem; filter: drop-shadow(0 0 8px var(--accent-glow)); }
+    .logo .w { color: var(--accent); text-shadow: 0 0 15px var(--accent-glow); }
+    .logo .c { color: #ffaa55; }
+    .logo .s { color: #ffcc77; }
+
+    .back-btn {
+      background: rgba(255, 170, 51, 0.15);
+      border: 1px solid var(--accent);
+      padding: 0.5rem 1.2rem;
+      border-radius: 40px;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .back-btn:hover {
+      background: var(--accent);
+      color: #050505;
+    }
+
+    .main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem 1.8rem;
+    }
+
+    .player-section {
+      background: var(--card);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+    }
+
+    .player-header {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .player-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .live-badge {
+      background: linear-gradient(135deg, #ff3355, #cc0044);
+      padding: 0.3rem 1rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: 800;
+      color: white;
+    }
+
+    .match-name {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .video-container {
+      position: relative;
+      width: 100%;
+      background: #000;
+      min-height: 500px;
+    }
+
+    #videoFrame {
+      width: 100%;
+      height: 550px;
+      border: none;
+      background: #000;
+    }
+
+    .player-footer {
+      padding: 0.8rem 1.5rem;
+      background: rgba(0, 0, 0, 0.3);
+      border-top: 1px solid var(--line);
+      font-size: 0.75rem;
+      color: var(--sub);
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      .main { padding: 1rem; }
+      #videoFrame { height: 350px; }
+      .nav-inner { flex-direction: column; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo" id="logoHome">
+      <span class="logo-icon">🏆</span>
+      <span><span class="w">W</span><span class="c">C</span><span class="s">S</span>26</span>
+    </div>
+    <a href="index.html" class="back-btn">← Retour aux matchs</a>
+  </div>
+</nav>
+
+<main class="main">
+  <div class="player-section">
+    <div class="player-header">
+      <div class="player-title">
+        <span class="live-badge">🔴 LIVE</span>
+        <span class="match-name" id="matchName">Chargement...</span>
+      </div>
+    </div>
+    <div class="video-container">
+      <iframe id="videoFrame" src="" allowfullscreen></iframe>
+    </div>
+    <div class="player-footer">
+      <span>⚡ Lecteur intégré • Source officielle du match</span>
+    </div>
+  </div>
+</main>
+
+<script>
+// ==================== TOUS LES LIENS DES MATCHS ====================
+const matchSources = {
+  // Jeudi 11 juin
+  "Mexique vs Afrique du Sud": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4331450/mexico-vs-south-africa.html?icg=RlI&ilang=fr",
+  
+  // Vendredi 12 juin
+  "Corée du Sud vs République Tchèque": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324311/czechia-vs-south-korea.html?icg=RlI&ilang=fr",
+  "Canada vs Bosnie-Herzégovine": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4331450/canada-vs-bosnia-and-herzegovina.html?icg=RlI&ilang=fr",
+  
+  // Samedi 13 juin
+  "États-Unis vs Paraguay": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318059/usa-vs-paraguay.html?icg=RlI&ilang=fr",
+  "Qatar vs Suisse": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318277/qatar-vs-switzerland.html?icg=RlI&ilang=fr",
+  
+  // Dimanche 14 juin
+  "Brésil vs Maroc": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324335/brazil-vs-morocco.html?icg=RlI&ilang=fr",
+  "Haïti vs Écosse": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4370286/haiti-vs-scotland.html?icg=RlI&ilang=fr",
+  "Australie vs Turquie": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4341131/australia-vs-turkiye.html?icg=RlI&ilang=fr",
+  "Allemagne vs Curaçao": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4341127/germany-vs-curacao.html?icg=RlI&ilang=fr",
+  "Pays-Bas vs Japon": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4370281/netherlands-vs-japan.html?icg=RlI&ilang=fr",
+  
+  // Lundi 15 juin
+  "Côte d'Ivoire vs Équateur": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324573/cote-divoire-vs-ecuador.html?icg=RlI&ilang=fr",
+  "Suède vs Tunisie": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324481/sweden-vs-tunisia.html?icg=RlI&ilang=fr",
+  "Espagne vs Cap-Vert": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4370283/spain-vs-cabo-verde.html?icg=RlI&ilang=fr",
+  "Belgique vs Égypte": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324306/belgium-vs-egypt.html?icg=RlI&ilang=fr",
+  
+  // Mardi 16 juin
+  "Arabie Saoudite vs Uruguay": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318281/saudi-arabia-vs-uruguay.html?icg=RlI&ilang=fr",
+  "Iran vs Nouvelle-Zélande": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4374271/ir-iran-vs-new-zealand.html?icg=RlI&ilang=fr",
+  "France vs Sénégal": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324444/france-vs-senegal.html?icg=RlI&ilang=fr",
+  
+  // Mercredi 17 juin
+  "Irak vs Norvège": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4370285/iraq-vs-norway.html?icg=RlI&ilang=fr",
+  "Argentine vs Algérie": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324568/argentina-vs-algeria.html?icg=RlI&ilang=fr",
+  "Autriche vs Jordanie": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318159/austria-vs-jordan.html?icg=RlI&ilang=fr",
+  "Portugal vs RD Congo": "https://nadia27bp.mp77g69ainei3gx2voxygen.ru/fr/football/fifa-world-cup-4374270/portugal-vs-democratic-republic-of-the-congo.html?icg=RlI&ilang=fr",
+  "Angleterre vs Croatie": "https://nadia27bp.mp77g69ainei3gx2voxygen.ru/fr/football/fifa-world-cup-4370282/england-vs-croatia.html?icg=RlI&ilang=fr",
+  
+  // Jeudi 18 juin
+  "Ghana vs Panama": "https://nadia27bp.mp77g69ainei3gx2voxygen.ru/fr/football/fifa-world-cup-4320242/ghana-vs-panama.html?icg=RlI&ilang=fr",
+  "Ouzbékistan vs Colombie": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4341125/uzbekistan-vs-colombia.html?icg=RlI&ilang=fr",
+  "République Tchèque vs Afrique du Sud": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324311/czechia-vs-south-africa.html?icg=RlI&ilang=fr",
+  "Suisse vs Bosnie-Herzégovine": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318278/switzerland-vs-bosnia-and-herzegovina.html?icg=RlI&ilang=fr",
+  
+  // Vendredi 19 juin
+  "Canada vs Qatar": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318061/canada-vs-qatar.html?icg=RlI&ilang=fr",
+  "Mexique vs Corée du Sud": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318062/mexico-vs-south-korea.html?icg=RlI&ilang=fr",
+  "États-Unis vs Australie": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318060/usa-vs-australia.html?icg=RlI&ilang=fr",
+  
+  // Samedi 20 juin
+  "Écosse vs Maroc": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324337/scotland-vs-morocco.html?icg=RlI&ilang=fr",
+  "Brésil vs Haïti": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324336/brazil-vs-haiti.html?icg=RlI&ilang=fr",
+  "Turquie vs Paraguay": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4341133/turkiye-vs-paraguay.html?icg=RlI&ilang=fr",
+  "Pays-Bas vs Suède": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324482/netherlands-vs-sweden.html?icg=RlI&ilang=fr",
+  "Allemagne vs Côte d'Ivoire": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324575/germany-vs-cote-divoire.html?icg=RlI&ilang=fr",
+  
+  // Dimanche 21 juin
+  "Équateur vs Curaçao": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324576/ecuador-vs-curacao.html?icg=RlI&ilang=fr",
+  "Tunisie vs Japon": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324485/tunisia-vs-japan.html?icg=RlI&ilang=fr",
+  "Espagne vs Arabie Saoudite": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318280/spain-vs-saudi-arabia.html?icg=RlI&ilang=fr",
+  "Belgique vs Iran": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324308/belgium-vs-ir-iran.html?icg=RlI&ilang=fr",
+  
+  // Lundi 22 juin
+  "Uruguay vs Cap-Vert": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318283/uruguay-vs-cabo-verde.html?icg=RlI&ilang=fr",
+  "Nouvelle-Zélande vs Égypte": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324309/new-zealand-vs-egypt.html?icg=RlI&ilang=fr",
+  "Argentine vs Autriche": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318160/argentina-vs-austria.html?icg=RlI&ilang=fr",
+  "France vs Irak": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324446/france-vs-iraq.html?icg=RlI&ilang=fr",
+  
+  // Mardi 23 juin
+  "Norvège vs Sénégal": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324448/norway-vs-senegal.html?icg=RlI&ilang=fr",
+  "Jordanie vs Algérie": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318162/jordan-vs-algeria.html?icg=RlI&ilang=fr",
+  "Portugal vs Ouzbékistan": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4341124/portugal-vs-uzbekistan.html?icg=RlI&ilang=fr",
+  "Angleterre vs Ghana": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4320241/england-vs-ghana.html?icg=RlI&ilang=fr",
+  
+  // Mercredi 24 juin
+  "Panama vs Croatie": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4320243/panama-vs-croatia.html?icg=RlI&ilang=fr",
+  "Colombie vs RD Congo": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4341130/colombia-vs-democratic-republic-of-the-congo.html?icg=RlI&ilang=fr",
+  "Suisse vs Canada": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318063/switzerland-vs-canada.html?icg=RlI&ilang=fr",
+  "Bosnie-Herzégovine vs Qatar": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318279/bosnia-and-herzegovina-vs-qatar.html?icg=RlI&ilang=fr",
+  
+  // Jeudi 25 juin
+  "Maroc vs Haïti": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324338/morocco-vs-haiti.html?icg=RlI&ilang=fr",
+  "Écosse vs Brésil": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324339/scotland-vs-brazil.html?icg=RlI&ilang=fr",
+  "République Tchèque vs Mexique": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318066/czechia-vs-mexico.html?icg=RlI&ilang=fr",
+  "Afrique du Sud vs Corée du Sud": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324312/south-africa-vs-south-korea.html?icg=RlI&ilang=fr",
+  "Curaçao vs Côte d'Ivoire": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324574/curacao-vs-cote-divoire.html?icg=RlI&ilang=fr",
+  "Équateur vs Allemagne": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324577/ecuador-vs-germany.html?icg=RlI&ilang=fr",
+  
+  // Vendredi 26 juin
+  "Tunisie vs Pays-Bas": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324483/tunisia-vs-netherlands.html?icg=RlI&ilang=fr",
+  "Japon vs Suède": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324484/japan-vs-sweden.html?icg=RlI&ilang=fr",
+  "Turquie vs États-Unis": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318064/turkiye-vs-usa.html?icg=RlI&ilang=fr",
+  "Paraguay vs Australie": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4341132/paraguay-vs-australia.html?icg=RlI&ilang=fr",
+  "Norvège vs France": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324445/norway-vs-france.html?icg=RlI&ilang=fr",
+  "Sénégal vs Irak": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324447/senegal-vs-iraq.html?icg=RlI&ilang=fr",
+  
+  // Samedi 27 juin
+  "Uruguay vs Espagne": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318282/uruguay-vs-spain.html?icg=RlI&ilang=fr",
+  "Cap-Vert vs Arabie Saoudite": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318284/cabo-verde-vs-saudi-arabia.html?icg=RlI&ilang=fr",
+  "Égypte vs Iran": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324307/egypt-vs-ir-iran.html?icg=RlI&ilang=fr",
+  "Nouvelle-Zélande vs Belgique": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324310/new-zealand-vs-belgium.html?icg=RlI&ilang=fr",
+  "Panama vs Angleterre": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4320244/panama-vs-england.html?icg=RlI&ilang=fr",
+  "Croatie vs Ghana": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4320245/croatia-vs-ghana.html?icg=RlI&ilang=fr",
+  
+  // Dimanche 28 juin
+  "Colombie vs Portugal": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4341128/colombia-vs-portugal.html?icg=RlI&ilang=fr",
+  "RD Congo vs Ouzbékistan": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4341129/democratic-republic-of-the-congo-vs-uzbekistan.html?icg=RlI&ilang=fr",
+  "Jordanie vs Argentine": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318161/jordan-vs-argentina.html?icg=RlI&ilang=fr",
+  "Algérie vs Autriche": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318163/algeria-vs-austria.html?icg=RlI&ilang=fr"
+};
+
+// Normalisation des noms pour la correspondance
+function normalizeString(str) {
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+// Créer une version normalisée des clés pour la recherche
+const normalizedSources = {};
+for (const [key, url] of Object.entries(matchSources)) {
+  normalizedSources[normalizeString(key)] = url;
+}
+
+// ==================== CODE PRINCIPAL ====================
+const urlParams = new URLSearchParams(window.location.search);
+const matchKey = urlParams.get('match');
+
+const matchNameSpan = document.getElementById('matchName');
+const videoFrame = document.getElementById('videoFrame');
+
+if (matchKey) {
+  const decodedMatch = decodeURIComponent(matchKey);
+  matchNameSpan.innerText = decodedMatch;
+  
+  const normalizedKey = normalizeString(decodedMatch);
+  
+  if (normalizedSources[normalizedKey]) {
+    videoFrame.src = normalizedSources[normalizedKey];
+  } else {
+    // Recherche plus souple
+    let found = false;
+    for (const [storedKey, url] of Object.entries(matchSources)) {
+      const normalizedStored = normalizeString(storedKey);
+      if (normalizedStored.includes(normalizedKey) || normalizedKey.includes(normalizedStored)) {
+        videoFrame.src = url;
+        found = true;
+        break;
+      }
+    }
+    if (!found) {
+      matchNameSpan.innerText = decodedMatch + " (source non configurée)";
+      videoFrame.src = "about:blank";
+      console.log(`Source manquante pour: ${decodedMatch}`);
+    }
+  }
+} else {
+  matchNameSpan.innerText = "Aucun match sélectionné";
+}
+
+document.getElementById('logoHome').addEventListener('click', () => {
+  window.location.href = 'index.html';
+});
+</script>
+</body>
+</html>
