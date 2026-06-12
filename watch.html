@@ -146,6 +146,95 @@
       height: 550px;
       border: none;
       background: #000;
+      display: none;
+    }
+
+    /* Écran d'attente */
+    .waiting-screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #0a0a10, #000);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .waiting-content {
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .waiting-icon {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
+
+    .waiting-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .waiting-subtitle {
+      color: var(--sub);
+      margin-bottom: 1.5rem;
+    }
+
+    .countdown-timer {
+      font-size: 3rem;
+      font-weight: 800;
+      font-family: monospace;
+      color: var(--accent);
+      background: rgba(0, 0, 0, 0.6);
+      padding: 1rem 2rem;
+      border-radius: 60px;
+      display: inline-block;
+      margin-bottom: 1.5rem;
+      letter-spacing: 5px;
+    }
+
+    .match-info-card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 1rem;
+      margin-top: 1rem;
+      display: inline-block;
+    }
+
+    .match-info-card p {
+      margin: 0.3rem 0;
+      font-size: 0.9rem;
+    }
+
+    .match-info-card strong {
+      color: var(--accent);
+    }
+
+    .progress-bar {
+      width: 300px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      margin: 1rem auto;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+      width: 0%;
+      transition: width 1s linear;
     }
 
     .player-footer {
@@ -161,6 +250,8 @@
       .main { padding: 1rem; }
       #videoFrame { height: 350px; }
       .nav-inner { flex-direction: column; text-align: center; }
+      .countdown-timer { font-size: 2rem; padding: 0.5rem 1rem; letter-spacing: 3px; }
+      .waiting-title { font-size: 1.4rem; }
     }
   </style>
 </head>
@@ -184,174 +275,329 @@
         <span class="match-name" id="matchName">Chargement...</span>
       </div>
     </div>
-    <div class="video-container">
+    <div class="video-container" id="videoContainer">
       <iframe id="videoFrame" src="" allowfullscreen></iframe>
+      <div id="waitingScreen" class="waiting-screen">
+        <div class="waiting-content">
+          <div class="waiting-icon">⏳</div>
+          <div class="waiting-title">Le match n'a pas encore commencé</div>
+          <div class="waiting-subtitle">Le live sera disponible 10 minutes avant le coup d'envoi</div>
+          <div class="countdown-timer" id="countdownTimer">--:--:--</div>
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <div class="match-info-card" id="matchInfoCard"></div>
+        </div>
+      </div>
     </div>
     <div class="player-footer">
-      <span>⚡ Lecteur intégré • Source officielle du match</span>
+      <span>⚡ Le live sera disponible 10 minutes avant le match</span>
     </div>
   </div>
 </main>
 
 <script>
-// ==================== TOUS LES LIENS DES MATCHS ====================
-const matchSources = {
+// ==================== HORAIRES DES MATCHS (fuseau horaire France/Paris) ====================
+// Format: "Nom du match" : "YYYY-MM-DD HH:MM"
+const matchSchedules = {
   // Jeudi 11 juin
-  "Mexique vs Afrique du Sud": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4331450/mexico-vs-south-africa.html?icg=RlI&ilang=fr",
+  "Mexique vs Afrique du Sud": "2026-06-11 21:00",
   
   // Vendredi 12 juin
-  "Corée du Sud vs République Tchèque": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324311/czechia-vs-south-korea.html?icg=RlI&ilang=fr",
-  "Canada vs Bosnie-Herzégovine": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4331450/canada-vs-bosnia-and-herzegovina.html?icg=RlI&ilang=fr",
+  "Corée du Sud vs République Tchèque": "2026-06-12 04:00",
+  "Canada vs Bosnie-Herzégovine": "2026-06-12 21:00",
   
   // Samedi 13 juin
-  "États-Unis vs Paraguay": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318059/usa-vs-paraguay.html?icg=RlI&ilang=fr",
-  "Qatar vs Suisse": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318277/qatar-vs-switzerland.html?icg=RlI&ilang=fr",
+  "États-Unis vs Paraguay": "2026-06-13 03:00",
+  "Qatar vs Suisse": "2026-06-13 21:00",
   
   // Dimanche 14 juin
+  "Brésil vs Maroc": "2026-06-14 00:00",
+  "Haïti vs Écosse": "2026-06-14 03:00",
+  "Australie vs Turquie": "2026-06-14 06:00",
+  "Allemagne vs Curaçao": "2026-06-14 19:00",
+  "Pays-Bas vs Japon": "2026-06-14 22:00",
+  
+  // Lundi 15 juin
+  "Côte d'Ivoire vs Équateur": "2026-06-15 01:00",
+  "Suède vs Tunisie": "2026-06-15 04:00",
+  "Espagne vs Cap-Vert": "2026-06-15 18:00",
+  "Belgique vs Égypte": "2026-06-15 21:00",
+  
+  // Mardi 16 juin
+  "Arabie Saoudite vs Uruguay": "2026-06-16 00:00",
+  "Iran vs Nouvelle-Zélande": "2026-06-16 03:00",
+  "France vs Sénégal": "2026-06-16 21:00",
+  
+  // Mercredi 17 juin
+  "Irak vs Norvège": "2026-06-17 00:00",
+  "Argentine vs Algérie": "2026-06-17 03:00",
+  "Autriche vs Jordanie": "2026-06-17 06:00",
+  "Portugal vs RD Congo": "2026-06-17 19:00",
+  "Angleterre vs Croatie": "2026-06-17 22:00",
+  
+  // Jeudi 18 juin
+  "Ghana vs Panama": "2026-06-18 01:00",
+  "Ouzbékistan vs Colombie": "2026-06-18 04:00",
+  "République Tchèque vs Afrique du Sud": "2026-06-18 18:00",
+  "Suisse vs Bosnie-Herzégovine": "2026-06-18 21:00",
+  
+  // Vendredi 19 juin
+  "Canada vs Qatar": "2026-06-19 00:00",
+  "Mexique vs Corée du Sud": "2026-06-19 03:00",
+  "États-Unis vs Australie": "2026-06-19 21:00",
+  
+  // Samedi 20 juin
+  "Écosse vs Maroc": "2026-06-20 00:00",
+  "Brésil vs Haïti": "2026-06-20 02:30",
+  "Turquie vs Paraguay": "2026-06-20 06:00",
+  "Pays-Bas vs Suède": "2026-06-20 19:00",
+  "Allemagne vs Côte d'Ivoire": "2026-06-20 22:00",
+  
+  // Dimanche 21 juin
+  "Équateur vs Curaçao": "2026-06-21 02:00",
+  "Tunisie vs Japon": "2026-06-21 06:00",
+  "Espagne vs Arabie Saoudite": "2026-06-21 18:00",
+  "Belgique vs Iran": "2026-06-21 21:00",
+  
+  // Lundi 22 juin
+  "Uruguay vs Cap-Vert": "2026-06-22 00:00",
+  "Nouvelle-Zélande vs Égypte": "2026-06-22 03:00",
+  "Argentine vs Autriche": "2026-06-22 19:00",
+  "France vs Irak": "2026-06-22 23:00",
+  
+  // Mardi 23 juin
+  "Norvège vs Sénégal": "2026-06-23 02:00",
+  "Jordanie vs Algérie": "2026-06-23 05:00",
+  "Portugal vs Ouzbékistan": "2026-06-23 19:00",
+  "Angleterre vs Ghana": "2026-06-23 22:00",
+  
+  // Mercredi 24 juin
+  "Panama vs Croatie": "2026-06-24 01:00",
+  "Colombie vs RD Congo": "2026-06-24 04:00",
+  "Suisse vs Canada": "2026-06-24 21:00",
+  "Bosnie-Herzégovine vs Qatar": "2026-06-24 21:00",
+  
+  // Jeudi 25 juin
+  "Maroc vs Haïti": "2026-06-25 00:00",
+  "Écosse vs Brésil": "2026-06-25 00:00",
+  "République Tchèque vs Mexique": "2026-06-25 03:00",
+  "Afrique du Sud vs Corée du Sud": "2026-06-25 03:00",
+  "Curaçao vs Côte d'Ivoire": "2026-06-25 22:00",
+  "Équateur vs Allemagne": "2026-06-25 22:00",
+  
+  // Vendredi 26 juin
+  "Tunisie vs Pays-Bas": "2026-06-26 01:00",
+  "Japon vs Suède": "2026-06-26 01:00",
+  "Turquie vs États-Unis": "2026-06-26 04:00",
+  "Paraguay vs Australie": "2026-06-26 04:00",
+  "Norvège vs France": "2026-06-26 21:00",
+  "Sénégal vs Irak": "2026-06-26 21:00",
+  
+  // Samedi 27 juin
+  "Uruguay vs Espagne": "2026-06-27 02:00",
+  "Cap-Vert vs Arabie Saoudite": "2026-06-27 02:00",
+  "Égypte vs Iran": "2026-06-27 05:00",
+  "Nouvelle-Zélande vs Belgique": "2026-06-27 05:00",
+  "Panama vs Angleterre": "2026-06-27 23:00",
+  "Croatie vs Ghana": "2026-06-27 23:00",
+  
+  // Dimanche 28 juin
+  "Colombie vs Portugal": "2026-06-28 01:30",
+  "RD Congo vs Ouzbékistan": "2026-06-28 01:30",
+  "Jordanie vs Argentine": "2026-06-28 04:00",
+  "Algérie vs Autriche": "2026-06-28 04:00"
+};
+
+// ==================== TOUS LES LIENS DES MATCHS ====================
+const matchSources = {
+  "Mexique vs Afrique du Sud": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4331450/mexico-vs-south-africa.html?icg=RlI&ilang=fr",
+  "Corée du Sud vs République Tchèque": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324311/czechia-vs-south-korea.html?icg=RlI&ilang=fr",
+  "Canada vs Bosnie-Herzégovine": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4331450/canada-vs-bosnia-and-herzegovina.html?icg=RlI&ilang=fr",
+  "États-Unis vs Paraguay": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318059/usa-vs-paraguay.html?icg=RlI&ilang=fr",
+  "Qatar vs Suisse": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318277/qatar-vs-switzerland.html?icg=RlI&ilang=fr",
   "Brésil vs Maroc": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324335/brazil-vs-morocco.html?icg=RlI&ilang=fr",
   "Haïti vs Écosse": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4370286/haiti-vs-scotland.html?icg=RlI&ilang=fr",
   "Australie vs Turquie": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4341131/australia-vs-turkiye.html?icg=RlI&ilang=fr",
   "Allemagne vs Curaçao": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4341127/germany-vs-curacao.html?icg=RlI&ilang=fr",
   "Pays-Bas vs Japon": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4370281/netherlands-vs-japan.html?icg=RlI&ilang=fr",
-  
-  // Lundi 15 juin
   "Côte d'Ivoire vs Équateur": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324573/cote-divoire-vs-ecuador.html?icg=RlI&ilang=fr",
   "Suède vs Tunisie": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324481/sweden-vs-tunisia.html?icg=RlI&ilang=fr",
   "Espagne vs Cap-Vert": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4370283/spain-vs-cabo-verde.html?icg=RlI&ilang=fr",
   "Belgique vs Égypte": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324306/belgium-vs-egypt.html?icg=RlI&ilang=fr",
-  
-  // Mardi 16 juin
   "Arabie Saoudite vs Uruguay": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318281/saudi-arabia-vs-uruguay.html?icg=RlI&ilang=fr",
   "Iran vs Nouvelle-Zélande": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4374271/ir-iran-vs-new-zealand.html?icg=RlI&ilang=fr",
   "France vs Sénégal": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324444/france-vs-senegal.html?icg=RlI&ilang=fr",
-  
-  // Mercredi 17 juin
   "Irak vs Norvège": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4370285/iraq-vs-norway.html?icg=RlI&ilang=fr",
   "Argentine vs Algérie": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324568/argentina-vs-algeria.html?icg=RlI&ilang=fr",
   "Autriche vs Jordanie": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318159/austria-vs-jordan.html?icg=RlI&ilang=fr",
   "Portugal vs RD Congo": "https://nadia27bp.mp77g69ainei3gx2voxygen.ru/fr/football/fifa-world-cup-4374270/portugal-vs-democratic-republic-of-the-congo.html?icg=RlI&ilang=fr",
   "Angleterre vs Croatie": "https://nadia27bp.mp77g69ainei3gx2voxygen.ru/fr/football/fifa-world-cup-4370282/england-vs-croatia.html?icg=RlI&ilang=fr",
-  
-  // Jeudi 18 juin
   "Ghana vs Panama": "https://nadia27bp.mp77g69ainei3gx2voxygen.ru/fr/football/fifa-world-cup-4320242/ghana-vs-panama.html?icg=RlI&ilang=fr",
   "Ouzbékistan vs Colombie": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4341125/uzbekistan-vs-colombia.html?icg=RlI&ilang=fr",
   "République Tchèque vs Afrique du Sud": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324311/czechia-vs-south-africa.html?icg=RlI&ilang=fr",
   "Suisse vs Bosnie-Herzégovine": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318278/switzerland-vs-bosnia-and-herzegovina.html?icg=RlI&ilang=fr",
-  
-  // Vendredi 19 juin
   "Canada vs Qatar": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318061/canada-vs-qatar.html?icg=RlI&ilang=fr",
   "Mexique vs Corée du Sud": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318062/mexico-vs-south-korea.html?icg=RlI&ilang=fr",
   "États-Unis vs Australie": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318060/usa-vs-australia.html?icg=RlI&ilang=fr",
-  
-  // Samedi 20 juin
   "Écosse vs Maroc": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324337/scotland-vs-morocco.html?icg=RlI&ilang=fr",
   "Brésil vs Haïti": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324336/brazil-vs-haiti.html?icg=RlI&ilang=fr",
   "Turquie vs Paraguay": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4341133/turkiye-vs-paraguay.html?icg=RlI&ilang=fr",
   "Pays-Bas vs Suède": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324482/netherlands-vs-sweden.html?icg=RlI&ilang=fr",
   "Allemagne vs Côte d'Ivoire": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324575/germany-vs-cote-divoire.html?icg=RlI&ilang=fr",
-  
-  // Dimanche 21 juin
   "Équateur vs Curaçao": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324576/ecuador-vs-curacao.html?icg=RlI&ilang=fr",
   "Tunisie vs Japon": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324485/tunisia-vs-japan.html?icg=RlI&ilang=fr",
   "Espagne vs Arabie Saoudite": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318280/spain-vs-saudi-arabia.html?icg=RlI&ilang=fr",
   "Belgique vs Iran": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324308/belgium-vs-ir-iran.html?icg=RlI&ilang=fr",
-  
-  // Lundi 22 juin
   "Uruguay vs Cap-Vert": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318283/uruguay-vs-cabo-verde.html?icg=RlI&ilang=fr",
   "Nouvelle-Zélande vs Égypte": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324309/new-zealand-vs-egypt.html?icg=RlI&ilang=fr",
   "Argentine vs Autriche": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318160/argentina-vs-austria.html?icg=RlI&ilang=fr",
   "France vs Irak": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324446/france-vs-iraq.html?icg=RlI&ilang=fr",
-  
-  // Mardi 23 juin
   "Norvège vs Sénégal": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324448/norway-vs-senegal.html?icg=RlI&ilang=fr",
   "Jordanie vs Algérie": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318162/jordan-vs-algeria.html?icg=RlI&ilang=fr",
   "Portugal vs Ouzbékistan": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4341124/portugal-vs-uzbekistan.html?icg=RlI&ilang=fr",
   "Angleterre vs Ghana": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4320241/england-vs-ghana.html?icg=RlI&ilang=fr",
-  
-  // Mercredi 24 juin
   "Panama vs Croatie": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4320243/panama-vs-croatia.html?icg=RlI&ilang=fr",
   "Colombie vs RD Congo": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4341130/colombia-vs-democratic-republic-of-the-congo.html?icg=RlI&ilang=fr",
   "Suisse vs Canada": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318063/switzerland-vs-canada.html?icg=RlI&ilang=fr",
   "Bosnie-Herzégovine vs Qatar": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318279/bosnia-and-herzegovina-vs-qatar.html?icg=RlI&ilang=fr",
-  
-  // Jeudi 25 juin
   "Maroc vs Haïti": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324338/morocco-vs-haiti.html?icg=RlI&ilang=fr",
   "Écosse vs Brésil": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324339/scotland-vs-brazil.html?icg=RlI&ilang=fr",
   "République Tchèque vs Mexique": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318066/czechia-vs-mexico.html?icg=RlI&ilang=fr",
   "Afrique du Sud vs Corée du Sud": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324312/south-africa-vs-south-korea.html?icg=RlI&ilang=fr",
   "Curaçao vs Côte d'Ivoire": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324574/curacao-vs-cote-divoire.html?icg=RlI&ilang=fr",
   "Équateur vs Allemagne": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324577/ecuador-vs-germany.html?icg=RlI&ilang=fr",
-  
-  // Vendredi 26 juin
   "Tunisie vs Pays-Bas": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324483/tunisia-vs-netherlands.html?icg=RlI&ilang=fr",
   "Japon vs Suède": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324484/japan-vs-sweden.html?icg=RlI&ilang=fr",
   "Turquie vs États-Unis": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318064/turkiye-vs-usa.html?icg=RlI&ilang=fr",
   "Paraguay vs Australie": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4341132/paraguay-vs-australia.html?icg=RlI&ilang=fr",
   "Norvège vs France": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324445/norway-vs-france.html?icg=RlI&ilang=fr",
   "Sénégal vs Irak": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324447/senegal-vs-iraq.html?icg=RlI&ilang=fr",
-  
-  // Samedi 27 juin
   "Uruguay vs Espagne": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318282/uruguay-vs-spain.html?icg=RlI&ilang=fr",
   "Cap-Vert vs Arabie Saoudite": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318284/cabo-verde-vs-saudi-arabia.html?icg=RlI&ilang=fr",
   "Égypte vs Iran": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324307/egypt-vs-ir-iran.html?icg=RlI&ilang=fr",
   "Nouvelle-Zélande vs Belgique": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4324310/new-zealand-vs-belgium.html?icg=RlI&ilang=fr",
   "Panama vs Angleterre": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4320244/panama-vs-england.html?icg=RlI&ilang=fr",
   "Croatie vs Ghana": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4320245/croatia-vs-ghana.html?icg=RlI&ilang=fr",
-  
-  // Dimanche 28 juin
   "Colombie vs Portugal": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4341128/colombia-vs-portugal.html?icg=RlI&ilang=fr",
   "RD Congo vs Ouzbékistan": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4341129/democratic-republic-of-the-congo-vs-uzbekistan.html?icg=RlI&ilang=fr",
   "Jordanie vs Argentine": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318161/jordan-vs-argentina.html?icg=RlI&ilang=fr",
   "Algérie vs Autriche": "https://jack07eo.mpstickv5m73jgravity.my/fr/football/fifa-world-cup-4318163/algeria-vs-austria.html?icg=RlI&ilang=fr"
 };
 
-// Normalisation des noms pour la correspondance
+// Normalisation des noms
 function normalizeString(str) {
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
 }
 
-// Créer une version normalisée des clés pour la recherche
-const normalizedSources = {};
-for (const [key, url] of Object.entries(matchSources)) {
-  normalizedSources[normalizeString(key)] = url;
-}
+// Variables globales
+let countdownInterval = null;
+let progressInterval = null;
+let hasStarted = false;
 
-// ==================== CODE PRINCIPAL ====================
+// Éléments DOM
+const videoFrame = document.getElementById('videoFrame');
+const waitingScreen = document.getElementById('waitingScreen');
+const countdownTimer = document.getElementById('countdownTimer');
+const progressFill = document.getElementById('progressFill');
+const matchInfoCard = document.getElementById('matchInfoCard');
+const matchNameSpan = document.getElementById('matchName');
+
+// Récupération du match depuis l'URL
 const urlParams = new URLSearchParams(window.location.search);
 const matchKey = urlParams.get('match');
 
-const matchNameSpan = document.getElementById('matchName');
-const videoFrame = document.getElementById('videoFrame');
+// Formatage de la date pour l'affichage
+function formatMatchDateTime(dateStr, timeStr) {
+  const [year, month, day] = dateStr.split('-');
+  return `${day}/${month}/${year} à ${timeStr}`;
+}
 
+// Démarrer le compte à rebours
+function startCountdown(matchDateTime) {
+  const matchTime = new Date(matchDateTime).getTime();
+  const TEN_MINUTES = 10 * 60 * 1000;
+  const releaseTime = matchTime - TEN_MINUTES;
+  
+  function update() {
+    const now = new Date().getTime();
+    const diff = releaseTime - now;
+    
+    if (diff <= 0 && !hasStarted) {
+      // Le match est accessible ! Lancer le stream
+      clearInterval(countdownInterval);
+      clearInterval(progressInterval);
+      startStream();
+      return;
+    }
+    
+    if (diff > 0) {
+      // Calcul du temps restant
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      countdownTimer.innerHTML = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      
+      // Calcul de la progression (entre 0 et 100%)
+      const totalWaitTime = matchTime - TEN_MINUTES - (matchTime - 30 * 24 * 60 * 60 * 1000); // Approximation
+      const elapsed = (matchTime - TEN_MINUTES) - diff;
+      const progress = Math.min(100, Math.max(0, (elapsed / (matchTime - TEN_MINUTES - (matchTime - 7 * 24 * 60 * 60 * 1000))) * 100));
+      progressFill.style.width = `${progress}%`;
+    }
+  }
+  
+  update();
+  countdownInterval = setInterval(update, 1000);
+}
+
+// Lancer le stream
+function startStream() {
+  hasStarted = true;
+  waitingScreen.style.display = 'none';
+  videoFrame.style.display = 'block';
+  
+  // Charger la source du match
+  const decodedMatch = decodeURIComponent(matchKey);
+  const normalizedKey = normalizeString(decodedMatch);
+  
+  for (const [storedKey, url] of Object.entries(matchSources)) {
+    const normalizedStored = normalizeString(storedKey);
+    if (normalizedStored.includes(normalizedKey) || normalizedKey.includes(normalizedStored)) {
+      videoFrame.src = url;
+      break;
+    }
+  }
+}
+
+// Initialisation
 if (matchKey) {
   const decodedMatch = decodeURIComponent(matchKey);
   matchNameSpan.innerText = decodedMatch;
   
-  const normalizedKey = normalizeString(decodedMatch);
-  
-  if (normalizedSources[normalizedKey]) {
-    videoFrame.src = normalizedSources[normalizedKey];
+  // Vérifier si le match a un horaire défini
+  if (matchSchedules[decodedMatch]) {
+    const [date, time] = matchSchedules[decodedMatch].split(' ');
+    const matchDateTime = `${date}T${time}:00`;
+    
+    // Afficher les infos du match
+    matchInfoCard.innerHTML = `
+      <p>🏆 <strong>${decodedMatch}</strong></p>
+      <p>📅 Date : <strong>${formatMatchDateTime(date, time)}</strong></p>
+      <p>⏰ Début du live : <strong>10 minutes avant le coup d'envoi</strong></p>
+    `;
+    
+    startCountdown(matchDateTime);
   } else {
-    // Recherche plus souple
-    let found = false;
-    for (const [storedKey, url] of Object.entries(matchSources)) {
-      const normalizedStored = normalizeString(storedKey);
-      if (normalizedStored.includes(normalizedKey) || normalizedKey.includes(normalizedStored)) {
-        videoFrame.src = url;
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      matchNameSpan.innerText = decodedMatch + " (source non configurée)";
-      videoFrame.src = "about:blank";
-      console.log(`Source manquante pour: ${decodedMatch}`);
-    }
+    // Pas d'horaire défini, on lance directement
+    matchInfoCard.innerHTML = `<p>🏆 <strong>${decodedMatch}</strong></p><p>⚡ Match disponible immédiatement</p>`;
+    startStream();
   }
 } else {
   matchNameSpan.innerText = "Aucun match sélectionné";
 }
 
+// Retour à l'accueil
 document.getElementById('logoHome').addEventListener('click', () => {
   window.location.href = 'index.html';
 });
