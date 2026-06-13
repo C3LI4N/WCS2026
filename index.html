@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>WCS26 • Coupe du Monde 2026</title>
-  <meta name="description" content="Coupe du Monde 2026 - Matchs en direct, programme officiel.">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23ffaa33'/%3E%3Ctext x='50' y='68' text-anchor='middle' fill='white' font-size='44' font-weight='bold' font-family='Arial'%3E🏆%3C/text%3E%3C/svg%3E" type="image/svg+xml">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Barlow+Condensed:ital,wght@0,700;0,800;0,900;1,800&display=swap" rel="stylesheet">
+  <title>WCS2026 • World Cup Streaming</title>
+  <meta name="description" content="La meilleure expérience pour suivre la Coupe du Monde 2026 en direct.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%23ff3366'/%3E%3Ctext x='50' y='68' text-anchor='middle' fill='white' font-size='44' font-weight='bold' font-family='Arial'%3E⚡%3C/text%3E%3C/svg%3E" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Clash+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -15,368 +15,697 @@
     }
 
     :root {
-      --bg: #050505;
-      --surface: #0a0a0a;
-      --card: rgba(20, 20, 25, 0.7);
-      --card-hover: rgba(30, 30, 40, 0.85);
-      --line: rgba(255, 255, 255, 0.08);
-      --text: #f5f5f5;
-      --sub: #a0a0a0;
-      --muted: #666;
-      --accent: #ffaa33;
-      --accent-dark: #ff7744;
-      --accent-glow: rgba(255, 170, 51, 0.4);
-      --radius: 16px;
-      --radius-lg: 24px;
+      --bg-dark: #0a0a0f;
+      --bg-card: rgba(15, 15, 25, 0.7);
+      --bg-card-hover: rgba(25, 25, 40, 0.85);
+      --border: rgba(255, 255, 255, 0.06);
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0b0;
+      --text-muted: #6a6a7a;
+      --accent-primary: #ff3366;
+      --accent-secondary: #ff6633;
+      --accent-tertiary: #ff9933;
+      --accent-glow: rgba(255, 51, 102, 0.3);
+      --radius-sm: 12px;
+      --radius-md: 20px;
+      --radius-lg: 28px;
+      --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
     }
 
     body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg);
-      background-image: radial-gradient(circle at 50% 0%, #1a0f08 0%, var(--bg) 80%);
-      background-attachment: fixed;
-      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
       line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
+
+    .animate-in {
+      animation: fadeInUp 0.6s ease forwards;
     }
 
     nav {
       position: sticky;
       top: 0;
-      z-index: 50;
-      background: rgba(5, 5, 5, 0.8);
+      z-index: 100;
+      background: rgba(10, 10, 15, 0.85);
       backdrop-filter: blur(20px);
-      border-bottom: 1px solid var(--line);
+      border-bottom: 1px solid var(--border);
     }
 
     .nav-inner {
       max-width: 1400px;
       margin: 0 auto;
-      padding: 1rem 1.8rem;
+      padding: 1rem 2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 1rem;
+      gap: 1.5rem;
       flex-wrap: wrap;
     }
 
     .logo {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 900;
-      font-size: 2rem;
-      letter-spacing: -1px;
-      text-decoration: none;
-      color: var(--text);
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       cursor: pointer;
-      transition: transform 0.2s;
+      transition: var(--transition);
     }
 
-    .logo:hover { transform: scale(1.02); }
-    .logo-icon { font-size: 2.2rem; filter: drop-shadow(0 0 8px var(--accent-glow)); }
-    .logo .w { color: var(--accent); text-shadow: 0 0 15px var(--accent-glow); }
-    .logo .c { color: #ffaa55; }
-    .logo .s { color: #ffcc77; }
+    .logo:hover {
+      transform: scale(1.02);
+    }
+
+    .logo-icon {
+      width: 45px;
+      height: 45px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      border-radius: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 0 20px var(--accent-glow);
+      animation: float 3s ease-in-out infinite;
+    }
+
+    .logo-text {
+      font-family: 'Clash Display', sans-serif;
+      font-weight: 700;
+      font-size: 1.6rem;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #fff, var(--accent-primary));
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .logo-badge {
+      font-size: 0.7rem;
+      background: rgba(255, 51, 102, 0.2);
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      color: var(--accent-primary);
+      margin-left: 8px;
+    }
 
     .nav-tabs {
       display: flex;
-      gap: 0.6rem;
-      background: rgba(0, 0, 0, 0.4);
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.03);
       padding: 0.3rem;
       border-radius: 60px;
-      flex-wrap: wrap;
-      justify-content: center;
+      border: 1px solid var(--border);
     }
 
     .nav-tab {
-      padding: 0.6rem 1.4rem;
+      padding: 0.6rem 1.5rem;
       border-radius: 40px;
-      font-weight: 700;
-      font-size: 0.9rem;
+      font-weight: 600;
+      font-size: 0.85rem;
       cursor: pointer;
       background: transparent;
       border: none;
-      color: var(--sub);
+      color: var(--text-secondary);
       font-family: inherit;
-      transition: all 0.2s;
+      transition: var(--transition);
     }
 
     .nav-tab.active {
-      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-      color: #050505;
-      box-shadow: 0 2px 12px var(--accent-glow);
-    }
-
-    .nav-tab:hover:not(.active) {
-      background: rgba(255, 170, 51, 0.2);
-      color: var(--text);
-    }
-
-    .btn-refresh {
-      background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-      border: none;
-      padding: 0.6rem 1.2rem;
-      border-radius: 40px;
-      font-weight: 700;
-      font-size: 0.85rem;
-      color: #050505;
-      cursor: pointer;
-      font-family: inherit;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .btn-refresh:hover {
-      transform: translateY(-2px);
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      color: white;
       box-shadow: 0 4px 15px var(--accent-glow);
     }
 
-    .header-strip {
-      padding: 3rem 1.8rem 2rem;
-      max-width: 1400px;
-      margin: 0 auto;
+    .nav-tab:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+    }
+
+    .live-clock {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 0.3rem 1.2rem;
+      border-radius: 40px;
+      font-family: monospace;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--accent-primary);
+      letter-spacing: 2px;
+      border: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero {
       text-align: center;
+      padding: 4rem 2rem 3rem;
+      position: relative;
+      overflow: hidden;
     }
 
-    .strip-label {
-      font-size: 0.85rem;
-      font-weight: 700;
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 1rem;
-      display: flex;
+    .hero::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255, 51, 102, 0.08) 0%, transparent 70%);
+      animation: pulse 8s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      gap: 0.6rem;
+      gap: 8px;
+      background: rgba(255, 51, 102, 0.15);
+      padding: 0.3rem 1rem;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--accent-primary);
+      margin-bottom: 1.5rem;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 51, 102, 0.3);
     }
 
-    .live-dot {
+    .hero-badge .dot {
       width: 8px;
       height: 8px;
+      background: var(--accent-primary);
       border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 0 10px var(--accent);
-      animation: blink 1.5s infinite;
+      animation: pulse 1.5s infinite;
     }
 
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.2; }
+    .hero-title {
+      font-family: 'Clash Display', sans-serif;
+      font-weight: 700;
+      font-size: clamp(2.5rem, 8vw, 5rem);
+      letter-spacing: -2px;
+      line-height: 1.1;
+      margin-bottom: 1rem;
     }
 
-    .strip-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 900;
-      font-size: clamp(3rem, 7vw, 5rem);
-      letter-spacing: -1px;
-      line-height: 0.95;
-      text-transform: uppercase;
+    .hero-title-gradient {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary));
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
     }
 
-    .strip-title em {
-      font-style: italic;
-      color: var(--accent);
-      text-shadow: 0 0 30px var(--accent-glow);
-    }
-
-    .date-indicator {
-      margin-top: 1rem;
+    .hero-subtitle {
+      color: var(--text-secondary);
       font-size: 1rem;
-      color: var(--sub);
-      font-weight: 500;
+      max-width: 600px;
+      margin: 0 auto;
     }
 
     .main {
       max-width: 1400px;
       margin: 0 auto;
-      padding: 0 1.8rem 4rem;
-    }
-
-    .section-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin: 1.5rem 0 1rem;
-      padding-bottom: 0.75rem;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .section-label {
-      font-size: 0.9rem;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 1.2rem;
-      margin-bottom: 2rem;
-    }
-
-    .match-card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      display: flex;
-      flex-direction: column;
-      transition: all 0.3s ease;
-      overflow: hidden;
-      backdrop-filter: blur(10px);
-      cursor: pointer;
-    }
-
-    .match-card:hover {
-      transform: translateY(-5px);
-      background: var(--card-hover);
-      border-color: rgba(255, 170, 51, 0.4);
-    }
-
-    .card-thumb {
+      padding: 0 2rem 4rem;
       position: relative;
-      aspect-ratio: 16/9;
-      overflow: hidden;
-      background: #111;
+      z-index: 2;
     }
 
-    .card-poster {
-      position: absolute;
-      inset: 0;
-      background-size: cover;
-      background-position: center;
-      transition: transform 0.5s ease;
-    }
-
-    .match-card:hover .card-poster { transform: scale(1.08); }
-    .card-poster-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to top, rgba(10,10,10,0.9) 0%, rgba(10,10,10,0.2) 60%, transparent 100%);
-    }
-
-    .badge-time {
-      position: absolute;
-      top: 0.8rem;
-      left: 0.8rem;
-      background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(4px);
-      padding: 0.25rem 0.7rem;
-      border-radius: 6px;
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--accent);
-      border: 1px solid rgba(255,170,51,0.3);
-    }
-
-    .badge-channels {
-      position: absolute;
-      bottom: 0.8rem;
-      left: 0.8rem;
-      background: rgba(0,0,0,0.7);
-      backdrop-filter: blur(4px);
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
-      font-size: 0.6rem;
-      font-weight: 600;
-      color: var(--accent);
+    .section-header {
       display: flex;
-      gap: 0.3rem;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin: 2rem 0 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
 
-    .card-body {
-      padding: 1rem;
-      flex: 1;
+    .section-title {
+      font-family: 'Clash Display', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 600;
+      letter-spacing: -1px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .card-teams {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-weight: 800;
-      font-size: 1.1rem;
-      text-transform: uppercase;
-      margin-bottom: 0.3rem;
+    .section-title span {
+      font-size: 0.9rem;
+      font-weight: 400;
+      color: var(--text-secondary);
     }
 
-    .card-teams span { color: var(--accent); }
-    .card-info { font-size: 0.7rem; color: var(--sub); margin-top: 0.3rem; }
-    .card-cta {
-      margin-top: 0.8rem;
-      font-size: 0.7rem;
-      font-weight: 700;
-      color: var(--accent);
+    .section-decoration {
+      width: 50px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-primary), transparent);
+      margin-top: 0.5rem;
     }
 
-    .programme-container {
-      background: var(--card);
-      border-radius: var(--radius-lg);
-      padding: 1.8rem;
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--line);
-    }
-
-    .programme-container h2 {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .day-group {
+    .countdown-banner {
+      background: linear-gradient(135deg, rgba(255, 51, 102, 0.1), rgba(255, 102, 51, 0.05));
+      border: 1px solid rgba(255, 51, 102, 0.2);
+      border-radius: var(--radius-md);
+      padding: 1rem 2rem;
       margin-bottom: 2rem;
-    }
-
-    .day-title {
-      font-family: 'Barlow Condensed', sans-serif;
-      font-size: 1.4rem;
-      font-weight: 800;
-      color: var(--accent);
-      border-left: 4px solid var(--accent);
-      padding-left: 1rem;
-      margin-bottom: 1rem;
-    }
-
-    .match-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
       flex-wrap: wrap;
-      padding: 0.8rem 0.5rem;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
+      gap: 1rem;
+      backdrop-filter: blur(10px);
     }
 
-    .match-row:hover { background: rgba(255,170,51,0.05); border-radius: 8px; }
-    .match-teams { font-weight: 600; font-size: 0.95rem; }
-    .match-teams span { color: var(--accent); margin: 0 6px; }
-    .match-hour { color: var(--accent); font-weight: 600; font-size: 0.85rem; margin-right: 0.5rem; }
-    .match-channels { font-size: 0.65rem; color: var(--sub); }
+    .countdown-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+    }
 
-    .grid-empty {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 3rem;
+    .countdown-timer {
+      display: flex;
+      gap: 0.5rem;
+      font-family: monospace;
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .countdown-unit {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 0.3rem 0.6rem;
+      border-radius: 8px;
+    }
+
+    .matches-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .match-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .match-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary), transparent);
+      transform: scaleX(0);
+      transition: transform 0.3s;
+    }
+
+    .match-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .match-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(255, 51, 102, 0.3);
+      background: var(--bg-card-hover);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .match-card.finished {
+      opacity: 0.5;
+      filter: grayscale(0.3);
+      cursor: not-allowed;
+    }
+
+    .match-card.finished:hover {
+      transform: none;
+    }
+
+    .match-time-ribbon {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      padding: 0.5rem 1rem;
+      display: inline-block;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .match-content {
+      padding: 1.5rem;
+    }
+
+    .match-competition {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 0.5rem;
+    }
+
+    .match-teams-modern {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 1rem 0;
+    }
+
+    .team-modern {
       text-align: center;
-      color: var(--sub);
-      border: 1px dashed var(--line);
-      grid-column: 1 / -1;
+      flex: 1;
+    }
+
+    .team-flag {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .team-name-modern {
+      font-weight: 700;
+      font-size: 1.2rem;
+      text-transform: uppercase;
+    }
+
+    .vs-circle {
+      width: 45px;
+      height: 45px;
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9rem;
+      color: white;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .match-details {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .match-group {
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+    }
+
+    .match-channel-badge {
+      background: rgba(255, 51, 102, 0.15);
+      padding: 0.2rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.65rem;
+      color: var(--accent-primary);
+    }
+
+    .match-footer-modern {
+      padding: 1rem 1.5rem;
+      background: rgba(0, 0, 0, 0.3);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .watch-button {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 0.75rem;
+      color: white;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: inherit;
+    }
+
+    .watch-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 15px var(--accent-glow);
+    }
+
+    .upcoming-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .upcoming-card-modern {
+      background: var(--bg-card);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 1rem;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .upcoming-card-modern:hover {
+      transform: translateX(5px);
+      border-color: var(--accent-primary);
+      background: var(--bg-card-hover);
+    }
+
+    .upcoming-time-badge {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+      border-radius: var(--radius-sm);
+      padding: 0.5rem;
+      text-align: center;
+      min-width: 70px;
+    }
+
+    .upcoming-time-badge .date {
+      font-size: 0.6rem;
+      opacity: 0.8;
+    }
+
+    .upcoming-time-badge .hour {
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+
+    .upcoming-info {
+      flex: 1;
+    }
+
+    .upcoming-teams {
+      font-weight: 700;
+      margin-bottom: 0.2rem;
+    }
+
+    .upcoming-channels {
+      font-size: 0.65rem;
+      color: var(--accent-primary);
+    }
+
+    .programme-container {
+      background: var(--bg-card);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+    }
+
+    .day-accordion {
+      margin-bottom: 1rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    .day-header {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 1rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: var(--transition);
+    }
+
+    .day-header:hover {
+      background: rgba(255, 51, 102, 0.1);
+    }
+
+    .day-header .arrow {
+      transition: transform 0.3s;
+    }
+
+    .day-header.open .arrow {
+      transform: rotate(180deg);
+    }
+
+    .day-matches {
+      display: none;
+      padding: 0 1rem 1rem;
+    }
+
+    .day-matches.open {
+      display: block;
+    }
+
+    .programme-match-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: 0.8rem 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .programme-match-row:hover {
+      background: rgba(255, 51, 102, 0.1);
+      border-radius: 8px;
+      padding-left: 0.5rem;
+      padding-right: 0.5rem;
+    }
+
+    .programme-match-row:last-child {
+      border-bottom: none;
+    }
+
+    .programme-match-teams {
+      font-weight: 600;
+    }
+
+    .programme-match-teams span {
+      color: var(--accent-primary);
+      margin: 0 5px;
+    }
+
+    .programme-match-info {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .programme-status {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+
+    .programme-status.live {
+      background: rgba(255, 51, 102, 0.2);
+      color: #ff3355;
+    }
+
+    .programme-status.soon {
+      background: rgba(255, 170, 51, 0.2);
+      color: var(--accent-primary);
+    }
+
+    .programme-status.finished {
+      background: rgba(136, 136, 136, 0.2);
+      color: #888;
     }
 
     footer {
-      border-top: 1px solid var(--line);
-      padding: 1.5rem;
+      border-top: 1px solid var(--border);
+      padding: 2rem;
       text-align: center;
-      background: rgba(5,5,5,0.8);
+      background: rgba(10, 10, 15, 0.9);
     }
-    .footer-text { font-size: 0.75rem; color: var(--muted); }
+
+    .footer-content {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .footer-links a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.8rem;
+      transition: var(--transition);
+    }
+
+    .footer-links a:hover {
+      color: var(--accent-primary);
+    }
+
+    .footer-copy {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 3rem;
+      text-align: center;
+      color: var(--text-secondary);
+      border: 1px dashed var(--border);
+    }
+
+    .empty-state-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
 
     @media (max-width: 768px) {
-      .nav-inner { flex-direction: column; padding: 1rem; }
+      .nav-inner { flex-direction: column; }
       .main { padding: 0 1rem 2rem; }
-      .grid { grid-template-columns: 1fr; }
+      .matches-grid { grid-template-columns: 1fr; }
+      .upcoming-grid { grid-template-columns: 1fr; }
+      .hero-title { font-size: 2rem; }
+      .footer-content { flex-direction: column; text-align: center; }
+      .footer-links { justify-content: center; flex-wrap: wrap; gap: 1rem; }
+      .match-teams-modern { flex-direction: column; gap: 1rem; }
+      .vs-circle { margin: 0.5rem 0; }
     }
   </style>
 </head>
@@ -385,143 +714,224 @@
 <nav>
   <div class="nav-inner">
     <div class="logo" id="logoHome">
-      <span class="logo-icon">🏆</span>
-      <span><span class="w">W</span><span class="c">C</span><span class="s">S</span>26</span>
+      <div class="logo-icon">⚡</div>
+      <div class="logo-text">WCS2026 <span class="logo-badge">ULTRA</span></div>
     </div>
-    <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-      <div class="nav-tabs">
-        <button class="nav-tab active" data-page="live">🔥 LIVE</button>
-        <button class="nav-tab" data-page="programme">📅 PROGRAMME</button>
-      </div>
-      <button class="btn-refresh" id="refreshBtn">⟳ Actualiser</button>
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-page="live">🔥 LIVE</button>
+      <button class="nav-tab" data-page="programme">📅 PROGRAMME</button>
     </div>
+    <div class="live-clock" id="liveClock"></div>
   </div>
 </nav>
 
-<div class="header-strip">
-  <div class="strip-label"><span class="live-dot"></span> WORLD CUP 2026 • USA • CANADA • MEXICO</div>
-  <h1 class="strip-title">COUPE DU MONDE<br><em>EN DIRECT</em></h1>
-  <div class="date-indicator" id="currentDateDisplay"></div>
+<div class="hero">
+  <div class="hero-badge">
+    <div class="dot"></div>
+    WORLD CUP 2026 • USA • CANADA • MEXICO
+  </div>
+  <h1 class="hero-title">
+    COUPE DU MONDE <span class="hero-title-gradient">EN DIRECT</span>
+  </h1>
+  <p class="hero-subtitle">Appréciez chaque match comme si vous y étiez présent.</p>
+<p class="hero-subtitle">La qualité HD, le streaming ultra-rapide.</p>
 </div>
 
 <main class="main">
   <div id="livePage">
-    <div class="section-head">
-      <div class="section-label"><span class="live-dot"></span> Matchs du jour</div>
+    <div class="countdown-banner" id="countdownBanner" style="display: none;">
+      <div class="countdown-label">
+        <span>⏰</span> PROCHAIN MATCH
+      </div>
+      <div class="countdown-timer" id="nextMatchCountdown"></div>
     </div>
-    <div class="grid" id="todayMatchesGrid">
-      <div class="grid-empty">Chargement...</div>
+
+    <div class="section-header">
+      <div class="section-title">
+        ⚡ MATCHS DU JOUR
+        <span id="todayCount"></span>
+      </div>
+      <div class="section-decoration"></div>
+    </div>
+    <div class="matches-grid" id="todayMatchesGrid">
+      <div class="empty-state">
+        <div class="empty-state-icon">⚽</div>
+        <div>Chargement des matchs...</div>
+      </div>
+    </div>
+
+    <div class="section-header">
+      <div class="section-title">
+        🎯 À VENIR
+        <span>Prochainement</span>
+      </div>
+      <div class="section-decoration"></div>
+    </div>
+    <div class="upcoming-grid" id="upcomingGrid">
+      <div class="empty-state">
+        <div class="empty-state-icon">⏳</div>
+        <div>Chargement...</div>
+      </div>
     </div>
   </div>
 
-  <div id="programmePage" style="display:none;">
+  <div id="programmePage" style="display: none;">
     <div class="programme-container">
-      <h2>📋 PROGRAMME OFFICIEL</h2>
-      <p style="margin-bottom: 1.5rem; color: var(--sub);">Coupe du Monde 2026 - Tous les matchs de la phase de groupes</p>
+      <div class="section-header" style="margin-top: 0;">
+        <div class="section-title">
+          📋 PROGRAMME COMPLET
+          <span>Phase de groupes</span>
+        </div>
+        <div class="section-decoration"></div>
+      </div>
       <div id="fullProgrammeContainer"></div>
     </div>
   </div>
 </main>
 
 <footer>
-  <div class="footer-text">© 2026 WCS26 – Coupe du Monde 2026. Cliquez sur un match pour regarder.</div>
+  <div class="footer-content">
+    <div class="logo" style="opacity: 0.7;">
+      <div class="logo-icon" style="width: 35px; height: 35px; font-size: 1.2rem;">⚡</div>
+      <div class="logo-text" style="font-size: 1.2rem;">WCS2026</div>
+    </div>
+    <div class="footer-links">
+      <a href="#">Mentions légales</a>
+      <a href="#">Confidentialité</a>
+      <a href="#">Contact</a>
+    </div>
+    <div class="footer-copy">© 2026 WCS2026 – La nouvelle génération du streaming sportif</div>
+  </div>
 </footer>
 
 <script>
 // ==================== PROGRAMME COMPLET CDM 2026 ====================
 const allMatches = [
   // Jeudi 11 juin
-  { date: "2026-06-11", hour: "21:00", home: "Mexique", away: "Afrique du Sud", channels: "M6 & beIN Sports" },
+  { date: "2026-06-11", hour: "21:00", home: "Mexique", away: "Afrique du Sud", channels: "M6 & beIN Sports", group: "A", flags: { home: "🇲🇽", away: "🇿🇦" } },
   // Vendredi 12 juin
-  { date: "2026-06-12", hour: "04:00", home: "Corée du Sud", away: "République Tchèque", channels: "beIN Sports" },
-  { date: "2026-06-12", hour: "21:00", home: "Canada", away: "Bosnie-Herzégovine", channels: "M6 & beIN Sports" },
+  { date: "2026-06-12", hour: "04:00", home: "Corée du Sud", away: "République Tchèque", channels: "beIN Sports", group: "B", flags: { home: "🇰🇷", away: "🇨🇿" } },
+  { date: "2026-06-12", hour: "21:00", home: "Canada", away: "Bosnie-Herzégovine", channels: "M6 & beIN Sports", group: "A", flags: { home: "🇨🇦", away: "🇧🇦" } },
   // Samedi 13 juin
-  { date: "2026-06-13", hour: "03:00", home: "États-Unis", away: "Paraguay", channels: "beIN Sports" },
-  { date: "2026-06-13", hour: "21:00", home: "Qatar", away: "Suisse", channels: "M6 & beIN Sports" },
+  { date: "2026-06-13", hour: "03:00", home: "États-Unis", away: "Paraguay", channels: "beIN Sports", group: "A", flags: { home: "🇺🇸", away: "🇵🇾" } },
+  { date: "2026-06-13", hour: "21:00", home: "Qatar", away: "Suisse", channels: "M6 & beIN Sports", group: "B", flags: { home: "🇶🇦", away: "🇨🇭" } },
   // Dimanche 14 juin
-  { date: "2026-06-14", hour: "00:00", home: "Brésil", away: "Maroc", channels: "M6 & beIN Sports" },
-  { date: "2026-06-14", hour: "03:00", home: "Haïti", away: "Écosse", channels: "beIN Sports" },
-  { date: "2026-06-14", hour: "06:00", home: "Australie", away: "Turquie", channels: "beIN Sports" },
-  { date: "2026-06-14", hour: "19:00", home: "Allemagne", away: "Curaçao", channels: "M6 & beIN Sports" },
-  { date: "2026-06-14", hour: "22:00", home: "Pays-Bas", away: "Japon", channels: "M6 & beIN Sports" },
+  { date: "2026-06-14", hour: "00:00", home: "Brésil", away: "Maroc", channels: "M6 & beIN Sports", group: "C", flags: { home: "🇧🇷", away: "🇲🇦" } },
+  { date: "2026-06-14", hour: "03:00", home: "Haïti", away: "Écosse", channels: "beIN Sports", group: "C", flags: { home: "🇭🇹", away: "🏴󠁧󠁢󠁳󠁣󠁴󠁿" } },
+  { date: "2026-06-14", hour: "06:00", home: "Australie", away: "Turquie", channels: "beIN Sports", group: "D", flags: { home: "🇦🇺", away: "🇹🇷" } },
+  { date: "2026-06-14", hour: "19:00", home: "Allemagne", away: "Curaçao", channels: "M6 & beIN Sports", group: "D", flags: { home: "🇩🇪", away: "🇨🇼" } },
+  { date: "2026-06-14", hour: "22:00", home: "Pays-Bas", away: "Japon", channels: "M6 & beIN Sports", group: "E", flags: { home: "🇳🇱", away: "🇯🇵" } },
   // Lundi 15 juin
-  { date: "2026-06-15", hour: "01:00", home: "Côte d'Ivoire", away: "Équateur", channels: "beIN Sports" },
-  { date: "2026-06-15", hour: "04:00", home: "Suède", away: "Tunisie", channels: "beIN Sports" },
-  { date: "2026-06-15", hour: "18:00", home: "Espagne", away: "Cap-Vert", channels: "M6 & beIN Sports" },
-  { date: "2026-06-15", hour: "21:00", home: "Belgique", away: "Égypte", channels: "M6 & beIN Sports" },
+  { date: "2026-06-15", hour: "01:00", home: "Côte d'Ivoire", away: "Équateur", channels: "beIN Sports", group: "E", flags: { home: "🇨🇮", away: "🇪🇨" } },
+  { date: "2026-06-15", hour: "04:00", home: "Suède", away: "Tunisie", channels: "beIN Sports", group: "F", flags: { home: "🇸🇪", away: "🇹🇳" } },
+  { date: "2026-06-15", hour: "18:00", home: "Espagne", away: "Cap-Vert", channels: "M6 & beIN Sports", group: "F", flags: { home: "🇪🇸", away: "🇨🇻" } },
+  { date: "2026-06-15", hour: "21:00", home: "Belgique", away: "Égypte", channels: "M6 & beIN Sports", group: "G", flags: { home: "🇧🇪", away: "🇪🇬" } },
   // Mardi 16 juin
-  { date: "2026-06-16", hour: "00:00", home: "Arabie Saoudite", away: "Uruguay", channels: "M6 & beIN Sports" },
-  { date: "2026-06-16", hour: "03:00", home: "Iran", away: "Nouvelle-Zélande", channels: "beIN Sports" },
-  { date: "2026-06-16", hour: "21:00", home: "France", away: "Sénégal", channels: "M6 & beIN Sports" },
+  { date: "2026-06-16", hour: "00:00", home: "Arabie Saoudite", away: "Uruguay", channels: "M6 & beIN Sports", group: "G", flags: { home: "🇸🇦", away: "🇺🇾" } },
+  { date: "2026-06-16", hour: "03:00", home: "Iran", away: "Nouvelle-Zélande", channels: "beIN Sports", group: "H", flags: { home: "🇮🇷", away: "🇳🇿" } },
+  { date: "2026-06-16", hour: "21:00", home: "France", away: "Sénégal", channels: "M6 & beIN Sports", group: "H", flags: { home: "🇫🇷", away: "🇸🇳" } },
   // Mercredi 17 juin
-  { date: "2026-06-17", hour: "00:00", home: "Irak", away: "Norvège", channels: "M6 & beIN Sports" },
-  { date: "2026-06-17", hour: "03:00", home: "Argentine", away: "Algérie", channels: "beIN Sports" },
-  { date: "2026-06-17", hour: "06:00", home: "Autriche", away: "Jordanie", channels: "beIN Sports" },
-  { date: "2026-06-17", hour: "19:00", home: "Portugal", away: "RD Congo", channels: "M6 & beIN Sports" },
-  { date: "2026-06-17", hour: "22:00", home: "Angleterre", away: "Croatie", channels: "M6 & beIN Sports" },
+  { date: "2026-06-17", hour: "00:00", home: "Irak", away: "Norvège", channels: "M6 & beIN Sports", group: "A", flags: { home: "🇮🇶", away: "🇳🇴" } },
+  { date: "2026-06-17", hour: "03:00", home: "Argentine", away: "Algérie", channels: "beIN Sports", group: "B", flags: { home: "🇦🇷", away: "🇩🇿" } },
+  { date: "2026-06-17", hour: "06:00", home: "Autriche", away: "Jordanie", channels: "beIN Sports", group: "B", flags: { home: "🇦🇹", away: "🇯🇴" } },
+  { date: "2026-06-17", hour: "19:00", home: "Portugal", away: "RD Congo", channels: "M6 & beIN Sports", group: "C", flags: { home: "🇵🇹", away: "🇨🇩" } },
+  { date: "2026-06-17", hour: "22:00", home: "Angleterre", away: "Croatie", channels: "M6 & beIN Sports", group: "C", flags: { home: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", away: "🇭🇷" } },
   // Jeudi 18 juin
-  { date: "2026-06-18", hour: "01:00", home: "Ghana", away: "Panama", channels: "beIN Sports" },
-  { date: "2026-06-18", hour: "04:00", home: "Ouzbékistan", away: "Colombie", channels: "beIN Sports" },
-  { date: "2026-06-18", hour: "18:00", home: "République Tchèque", away: "Afrique du Sud", channels: "M6 & beIN Sports" },
-  { date: "2026-06-18", hour: "21:00", home: "Suisse", away: "Bosnie-Herzégovine", channels: "M6 & beIN Sports" },
+  { date: "2026-06-18", hour: "01:00", home: "Ghana", away: "Panama", channels: "beIN Sports", group: "D", flags: { home: "🇬🇭", away: "🇵🇦" } },
+  { date: "2026-06-18", hour: "04:00", home: "Ouzbékistan", away: "Colombie", channels: "beIN Sports", group: "D", flags: { home: "🇺🇿", away: "🇨🇴" } },
+  { date: "2026-06-18", hour: "18:00", home: "République Tchèque", away: "Afrique du Sud", channels: "M6 & beIN Sports", group: "E", flags: { home: "🇨🇿", away: "🇿🇦" } },
+  { date: "2026-06-18", hour: "21:00", home: "Suisse", away: "Bosnie-Herzégovine", channels: "M6 & beIN Sports", group: "E", flags: { home: "🇨🇭", away: "🇧🇦" } },
   // Vendredi 19 juin
-  { date: "2026-06-19", hour: "00:00", home: "Canada", away: "Qatar", channels: "beIN Sports" },
-  { date: "2026-06-19", hour: "03:00", home: "Mexique", away: "Corée du Sud", channels: "beIN Sports" },
-  { date: "2026-06-19", hour: "21:00", home: "États-Unis", away: "Australie", channels: "M6 & beIN Sports" },
+  { date: "2026-06-19", hour: "00:00", home: "Canada", away: "Qatar", channels: "beIN Sports", group: "A", flags: { home: "🇨🇦", away: "🇶🇦" } },
+  { date: "2026-06-19", hour: "03:00", home: "Mexique", away: "Corée du Sud", channels: "beIN Sports", group: "A", flags: { home: "🇲🇽", away: "🇰🇷" } },
+  { date: "2026-06-19", hour: "21:00", home: "États-Unis", away: "Australie", channels: "M6 & beIN Sports", group: "B", flags: { home: "🇺🇸", away: "🇦🇺" } },
   // Samedi 20 juin
-  { date: "2026-06-20", hour: "00:00", home: "Écosse", away: "Maroc", channels: "M6 & beIN Sports" },
-  { date: "2026-06-20", hour: "02:30", home: "Brésil", away: "Haïti", channels: "M6 & beIN Sports" },
-  { date: "2026-06-20", hour: "06:00", home: "Turquie", away: "Paraguay", channels: "beIN Sports" },
-  { date: "2026-06-20", hour: "19:00", home: "Pays-Bas", away: "Suède", channels: "M6 & beIN Sports" },
-  { date: "2026-06-20", hour: "22:00", home: "Allemagne", away: "Côte d'Ivoire", channels: "M6 & beIN Sports" },
+  { date: "2026-06-20", hour: "00:00", home: "Écosse", away: "Maroc", channels: "M6 & beIN Sports", group: "B", flags: { home: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", away: "🇲🇦" } },
+  { date: "2026-06-20", hour: "02:30", home: "Brésil", away: "Haïti", channels: "M6 & beIN Sports", group: "C", flags: { home: "🇧🇷", away: "🇭🇹" } },
+  { date: "2026-06-20", hour: "06:00", home: "Turquie", away: "Paraguay", channels: "beIN Sports", group: "C", flags: { home: "🇹🇷", away: "🇵🇾" } },
+  { date: "2026-06-20", hour: "19:00", home: "Pays-Bas", away: "Suède", channels: "M6 & beIN Sports", group: "D", flags: { home: "🇳🇱", away: "🇸🇪" } },
+  { date: "2026-06-20", hour: "22:00", home: "Allemagne", away: "Côte d'Ivoire", channels: "M6 & beIN Sports", group: "D", flags: { home: "🇩🇪", away: "🇨🇮" } },
   // Dimanche 21 juin
-  { date: "2026-06-21", hour: "02:00", home: "Équateur", away: "Curaçao", channels: "beIN Sports" },
-  { date: "2026-06-21", hour: "06:00", home: "Tunisie", away: "Japon", channels: "beIN Sports" },
-  { date: "2026-06-21", hour: "18:00", home: "Espagne", away: "Arabie Saoudite", channels: "M6 & beIN Sports" },
-  { date: "2026-06-21", hour: "21:00", home: "Belgique", away: "Iran", channels: "M6 & beIN Sports" },
+  { date: "2026-06-21", hour: "02:00", home: "Équateur", away: "Curaçao", channels: "beIN Sports", group: "E", flags: { home: "🇪🇨", away: "🇨🇼" } },
+  { date: "2026-06-21", hour: "06:00", home: "Tunisie", away: "Japon", channels: "beIN Sports", group: "E", flags: { home: "🇹🇳", away: "🇯🇵" } },
+  { date: "2026-06-21", hour: "18:00", home: "Espagne", away: "Arabie Saoudite", channels: "M6 & beIN Sports", group: "F", flags: { home: "🇪🇸", away: "🇸🇦" } },
+  { date: "2026-06-21", hour: "21:00", home: "Belgique", away: "Iran", channels: "M6 & beIN Sports", group: "F", flags: { home: "🇧🇪", away: "🇮🇷" } },
   // Lundi 22 juin
-  { date: "2026-06-22", hour: "00:00", home: "Uruguay", away: "Cap-Vert", channels: "beIN Sports" },
-  { date: "2026-06-22", hour: "03:00", home: "Nouvelle-Zélande", away: "Égypte", channels: "beIN Sports" },
-  { date: "2026-06-22", hour: "19:00", home: "Argentine", away: "Autriche", channels: "M6 & beIN Sports" },
-  { date: "2026-06-22", hour: "23:00", home: "France", away: "Irak", channels: "M6 & beIN Sports" },
+  { date: "2026-06-22", hour: "00:00", home: "Uruguay", away: "Cap-Vert", channels: "beIN Sports", group: "G", flags: { home: "🇺🇾", away: "🇨🇻" } },
+  { date: "2026-06-22", hour: "03:00", home: "Nouvelle-Zélande", away: "Égypte", channels: "beIN Sports", group: "G", flags: { home: "🇳🇿", away: "🇪🇬" } },
+  { date: "2026-06-22", hour: "19:00", home: "Argentine", away: "Autriche", channels: "M6 & beIN Sports", group: "H", flags: { home: "🇦🇷", away: "🇦🇹" } },
+  { date: "2026-06-22", hour: "23:00", home: "France", away: "Irak", channels: "M6 & beIN Sports", group: "H", flags: { home: "🇫🇷", away: "🇮🇶" } },
   // Mardi 23 juin
-  { date: "2026-06-23", hour: "02:00", home: "Norvège", away: "Sénégal", channels: "beIN Sports" },
-  { date: "2026-06-23", hour: "05:00", home: "Jordanie", away: "Algérie", channels: "beIN Sports" },
-  { date: "2026-06-23", hour: "19:00", home: "Portugal", away: "Ouzbékistan", channels: "M6 & beIN Sports" },
-  { date: "2026-06-23", hour: "22:00", home: "Angleterre", away: "Ghana", channels: "M6 & beIN Sports" },
+  { date: "2026-06-23", hour: "02:00", home: "Norvège", away: "Sénégal", channels: "beIN Sports", group: "A", flags: { home: "🇳🇴", away: "🇸🇳" } },
+  { date: "2026-06-23", hour: "05:00", home: "Jordanie", away: "Algérie", channels: "beIN Sports", group: "B", flags: { home: "🇯🇴", away: "🇩🇿" } },
+  { date: "2026-06-23", hour: "19:00", home: "Portugal", away: "Ouzbékistan", channels: "M6 & beIN Sports", group: "C", flags: { home: "🇵🇹", away: "🇺🇿" } },
+  { date: "2026-06-23", hour: "22:00", home: "Angleterre", away: "Ghana", channels: "M6 & beIN Sports", group: "C", flags: { home: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", away: "🇬🇭" } },
   // Mercredi 24 juin
-  { date: "2026-06-24", hour: "01:00", home: "Panama", away: "Croatie", channels: "beIN Sports" },
-  { date: "2026-06-24", hour: "00:00", home: "Jordanie", away: "Algérie", channels: "beIN Sports" },
-  { date: "2026-06-24", hour: "04:00", home: "Colombie", away: "RD Congo", channels: "beIN Sports" },
-  { date: "2026-06-24", hour: "21:00", home: "Suisse", away: "Canada", channels: "M6 & beIN Sports" },
-  { date: "2026-06-24", hour: "21:00", home: "Bosnie-Herzégovine", away: "Qatar", channels: "beIN Sports" },
+  { date: "2026-06-24", hour: "01:00", home: "Panama", away: "Croatie", channels: "beIN Sports", group: "D", flags: { home: "🇵🇦", away: "🇭🇷" } },
+  { date: "2026-06-24", hour: "00:00", home: "Jordanie", away: "Algérie", channels: "beIN Sports", group: "B", flags: { home: "🇯🇴", away: "🇩🇿" } },
+  { date: "2026-06-24", hour: "04:00", home: "Colombie", away: "RD Congo", channels: "beIN Sports", group: "D", flags: { home: "🇨🇴", away: "🇨🇩" } },
+  { date: "2026-06-24", hour: "21:00", home: "Suisse", away: "Canada", channels: "M6 & beIN Sports", group: "E", flags: { home: "🇨🇭", away: "🇨🇦" } },
+  { date: "2026-06-24", hour: "21:00", home: "Bosnie-Herzégovine", away: "Qatar", channels: "beIN Sports", group: "E", flags: { home: "🇧🇦", away: "🇶🇦" } },
   // Jeudi 25 juin
-  { date: "2026-06-25", hour: "00:00", home: "Écosse", away: "Brésil", channels: "M6 & beIN Sports" },
-  { date: "2026-06-25", hour: "00:00", home: "Maroc", away: "Haïti", channels: "beIN Sports" },
-  { date: "2026-06-25", hour: "03:00", home: "République Tchèque", away: "Mexique", channels: "beIN Sports" },
-  { date: "2026-06-25", hour: "03:00", home: "Afrique du Sud", away: "Corée du Sud", channels: "beIN Sports" },
-  { date: "2026-06-25", hour: "22:00", home: "Équateur", away: "Allemagne", channels: "M6 & beIN Sports" },
-  { date: "2026-06-25", hour: "22:00", home: "Curaçao", away: "Côte d'Ivoire", channels: "beIN Sports" },
+  { date: "2026-06-25", hour: "00:00", home: "Écosse", away: "Brésil", channels: "M6 & beIN Sports", group: "F", flags: { home: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", away: "🇧🇷" } },
+  { date: "2026-06-25", hour: "00:00", home: "Maroc", away: "Haïti", channels: "beIN Sports", group: "F", flags: { home: "🇲🇦", away: "🇭🇹" } },
+  { date: "2026-06-25", hour: "03:00", home: "République Tchèque", away: "Mexique", channels: "beIN Sports", group: "G", flags: { home: "🇨🇿", away: "🇲🇽" } },
+  { date: "2026-06-25", hour: "03:00", home: "Afrique du Sud", away: "Corée du Sud", channels: "beIN Sports", group: "G", flags: { home: "🇿🇦", away: "🇰🇷" } },
+  { date: "2026-06-25", hour: "22:00", home: "Équateur", away: "Allemagne", channels: "M6 & beIN Sports", group: "H", flags: { home: "🇪🇨", away: "🇩🇪" } },
+  { date: "2026-06-25", hour: "22:00", home: "Curaçao", away: "Côte d'Ivoire", channels: "beIN Sports", group: "H", flags: { home: "🇨🇼", away: "🇨🇮" } },
   // Vendredi 26 juin
-  { date: "2026-06-26", hour: "01:00", home: "Tunisie", away: "Pays-Bas", channels: "M6 & beIN Sports" },
-  { date: "2026-06-26", hour: "01:00", home: "Japon", away: "Suède", channels: "beIN Sports" },
-  { date: "2026-06-26", hour: "04:00", home: "Turquie", away: "États-Unis", channels: "beIN Sports" },
-  { date: "2026-06-26", hour: "04:00", home: "Paraguay", away: "Australie", channels: "beIN Sports" },
-  { date: "2026-06-26", hour: "21:00", home: "Norvège", away: "France", channels: "M6 & beIN Sports" },
-  { date: "2026-06-26", hour: "21:00", home: "Sénégal", away: "Irak", channels: "beIN Sports" },
+  { date: "2026-06-26", hour: "01:00", home: "Tunisie", away: "Pays-Bas", channels: "M6 & beIN Sports", group: "A", flags: { home: "🇹🇳", away: "🇳🇱" } },
+  { date: "2026-06-26", hour: "01:00", home: "Japon", away: "Suède", channels: "beIN Sports", group: "B", flags: { home: "🇯🇵", away: "🇸🇪" } },
+  { date: "2026-06-26", hour: "04:00", home: "Turquie", away: "États-Unis", channels: "beIN Sports", group: "C", flags: { home: "🇹🇷", away: "🇺🇸" } },
+  { date: "2026-06-26", hour: "04:00", home: "Paraguay", away: "Australie", channels: "beIN Sports", group: "C", flags: { home: "🇵🇾", away: "🇦🇺" } },
+  { date: "2026-06-26", hour: "21:00", home: "Norvège", away: "France", channels: "M6 & beIN Sports", group: "D", flags: { home: "🇳🇴", away: "🇫🇷" } },
+  { date: "2026-06-26", hour: "21:00", home: "Sénégal", away: "Irak", channels: "beIN Sports", group: "D", flags: { home: "🇸🇳", away: "🇮🇶" } },
   // Samedi 27 juin
-  { date: "2026-06-27", hour: "02:00", home: "Uruguay", away: "Espagne", channels: "M6 & beIN Sports" },
-  { date: "2026-06-27", hour: "02:00", home: "Cap-Vert", away: "Arabie Saoudite", channels: "beIN Sports" },
-  { date: "2026-06-27", hour: "05:00", home: "Nouvelle-Zélande", away: "Belgique", channels: "beIN Sports" },
-  { date: "2026-06-27", hour: "05:00", home: "Égypte", away: "Iran", channels: "beIN Sports" },
-  { date: "2026-06-27", hour: "23:00", home: "Panama", away: "Angleterre", channels: "M6 & beIN Sports" },
-  { date: "2026-06-27", hour: "23:00", home: "Croatie", away: "Ghana", channels: "beIN Sports" },
+  { date: "2026-06-27", hour: "02:00", home: "Uruguay", away: "Espagne", channels: "M6 & beIN Sports", group: "E", flags: { home: "🇺🇾", away: "🇪🇸" } },
+  { date: "2026-06-27", hour: "02:00", home: "Cap-Vert", away: "Arabie Saoudite", channels: "beIN Sports", group: "E", flags: { home: "🇨🇻", away: "🇸🇦" } },
+  { date: "2026-06-27", hour: "05:00", home: "Nouvelle-Zélande", away: "Belgique", channels: "beIN Sports", group: "F", flags: { home: "🇳🇿", away: "🇧🇪" } },
+  { date: "2026-06-27", hour: "05:00", home: "Égypte", away: "Iran", channels: "beIN Sports", group: "F", flags: { home: "🇪🇬", away: "🇮🇷" } },
+  { date: "2026-06-27", hour: "23:00", home: "Panama", away: "Angleterre", channels: "M6 & beIN Sports", group: "G", flags: { home: "🇵🇦", away: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" } },
+  { date: "2026-06-27", hour: "23:00", home: "Croatie", away: "Ghana", channels: "beIN Sports", group: "G", flags: { home: "🇭🇷", away: "🇬🇭" } },
   // Dimanche 28 juin
-  { date: "2026-06-28", hour: "01:30", home: "RD Congo", away: "Ouzbékistan", channels: "beIN Sports" },
-  { date: "2026-06-28", hour: "01:30", home: "Colombie", away: "Portugal", channels: "M6 & beIN Sports" },
-  { date: "2026-06-28", hour: "04:00", home: "Jordanie", away: "Argentine", channels: "beIN Sports" },
-  { date: "2026-06-28", hour: "04:00", home: "Algérie", away: "Autriche", channels: "beIN Sports" }
+  { date: "2026-06-28", hour: "01:30", home: "RD Congo", away: "Ouzbékistan", channels: "beIN Sports", group: "H", flags: { home: "🇨🇩", away: "🇺🇿" } },
+  { date: "2026-06-28", hour: "01:30", home: "Colombie", away: "Portugal", channels: "M6 & beIN Sports", group: "H", flags: { home: "🇨🇴", away: "🇵🇹" } },
+  { date: "2026-06-28", hour: "04:00", home: "Jordanie", away: "Argentine", channels: "beIN Sports", group: "A", flags: { home: "🇯🇴", away: "🇦🇷" } },
+  { date: "2026-06-28", hour: "04:00", home: "Algérie", away: "Autriche", channels: "beIN Sports", group: "B", flags: { home: "🇩🇿", away: "🇦🇹" } }
 ];
+
+// Drapeaux supplémentaires
+const flagMap = {
+  "Écosse": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+  "Angleterre": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+  "Pays-Bas": "🇳🇱",
+  "Côte d'Ivoire": "🇨🇮",
+  "Arabie Saoudite": "🇸🇦",
+  "Nouvelle-Zélande": "🇳🇿",
+  "RD Congo": "🇨🇩",
+  "Ouzbékistan": "🇺🇿",
+  "République Tchèque": "🇨🇿",
+  "Bosnie-Herzégovine": "🇧🇦",
+  "Cap-Vert": "🇨🇻"
+};
+
+function getFlag(team) {
+  if (flagMap[team]) return flagMap[team];
+  const defaultFlags = {
+    "Mexique": "🇲🇽", "Afrique du Sud": "🇿🇦", "Corée du Sud": "🇰🇷",
+    "Canada": "🇨🇦", "États-Unis": "🇺🇸", "Paraguay": "🇵🇾",
+    "Qatar": "🇶🇦", "Suisse": "🇨🇭", "Brésil": "🇧🇷", "Maroc": "🇲🇦",
+    "Haïti": "🇭🇹", "Australie": "🇦🇺", "Turquie": "🇹🇷", "Allemagne": "🇩🇪",
+    "Curaçao": "🇨🇼", "Japon": "🇯🇵", "Équateur": "🇪🇨", "Suède": "🇸🇪",
+    "Tunisie": "🇹🇳", "Espagne": "🇪🇸", "Belgique": "🇧🇪", "Égypte": "🇪🇬",
+    "Uruguay": "🇺🇾", "Iran": "🇮🇷", "France": "🇫🇷", "Sénégal": "🇸🇳",
+    "Irak": "🇮🇶", "Norvège": "🇳🇴", "Argentine": "🇦🇷", "Algérie": "🇩🇿",
+    "Autriche": "🇦🇹", "Jordanie": "🇯🇴", "Portugal": "🇵🇹", "Angleterre": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+    "Croatie": "🇭🇷", "Ghana": "🇬🇭", "Panama": "🇵🇦", "Colombie": "🇨🇴",
+    "Pays-Bas": "🇳🇱"
+  };
+  return defaultFlags[team] || "🏆";
+}
 
 function getTodayDate() {
   const now = new Date();
@@ -531,52 +941,177 @@ function getTodayDate() {
   return `${year}-${month}-${day}`;
 }
 
-function getTodayMatches() {
-  const today = getTodayDate();
-  return allMatches.filter(m => m.date === today);
+function getMatchDateTime(match) {
+  return new Date(`${match.date}T${match.hour}:00`);
 }
 
-function formatMatchKey(home, away) {
-  return `${home} vs ${away}`.replace(/é/g, 'e').replace(/è/g, 'e').replace(/ê/g, 'e').replace(/î/g, 'i').replace(/ô/g, 'o').replace(/û/g, 'u').replace(/ç/g, 'c').replace(/ë/g, 'e').replace(/ï/g, 'i');
+const MATCH_DURATION = 150 * 60 * 1000;
+
+function isMatchFinished(match) {
+  const matchEnd = getMatchDateTime(match).getTime() + MATCH_DURATION;
+  return Date.now() > matchEnd;
 }
 
+function isMatchLive(match) {
+  const matchStart = getMatchDateTime(match).getTime();
+  const matchEnd = matchStart + MATCH_DURATION;
+  const now = Date.now();
+  return now >= matchStart && now <= matchEnd;
+}
+
+function getMatchStatus(match) {
+  if (isMatchFinished(match)) return { text: "Terminé", class: "finished", icon: "✅" };
+  if (isMatchLive(match)) return { text: "EN DIRECT", class: "live", icon: "🔴" };
+  return { text: "À venir", class: "soon", icon: "⏳" };
+}
+
+// Horloge
+function updateLiveClock() {
+  const clock = document.getElementById('liveClock');
+  const now = new Date();
+  clock.textContent = now.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+}
+setInterval(updateLiveClock, 1000);
+updateLiveClock();
+
+// Bandeau prochain match
+function updateNextMatchCountdown() {
+  const now = Date.now();
+  const nextMatch = allMatches
+    .filter(m => getMatchDateTime(m) > now && !isMatchFinished(m))
+    .sort((a, b) => getMatchDateTime(a) - getMatchDateTime(b))[0];
+  
+  const banner = document.getElementById('countdownBanner');
+  const countdownEl = document.getElementById('nextMatchCountdown');
+  
+  if (nextMatch) {
+    const matchTime = getMatchDateTime(nextMatch);
+    const diff = matchTime - now;
+    if (diff > 0 && diff < 7 * 24 * 60 * 60 * 1000) {
+      banner.style.display = 'flex';
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      countdownEl.innerHTML = `
+        <span class="countdown-unit">${String(hours).padStart(2, '0')}h</span>
+        <span class="countdown-unit">${String(minutes).padStart(2, '0')}m</span>
+        <span class="countdown-unit">${String(seconds).padStart(2, '0')}s</span>
+      `;
+      return;
+    }
+  }
+  banner.style.display = 'none';
+}
+
+// Rendu matchs du jour
 function renderTodayMatches() {
   const container = document.getElementById('todayMatchesGrid');
-  const todayMatches = getTodayMatches();
-  const todayDate = new Date();
-  const dateStr = todayDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-  document.getElementById('currentDateDisplay').innerHTML = `📅 ${dateStr}`;
+  const today = getTodayDate();
+  const todayMatches = allMatches.filter(m => m.date === today);
+  document.getElementById('todayCount').innerHTML = `(${todayMatches.length} match${todayMatches.length > 1 ? 's' : ''})`;
 
   if (todayMatches.length === 0) {
-    container.innerHTML = `<div class="grid-empty">⚽ Aucun match programmé aujourd'hui.<br>Vérifiez le programme complet.</div>`;
+    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⚽</div><div>Aucun match programmé aujourd'hui</div></div>`;
     return;
   }
 
-  container.innerHTML = todayMatches.map(match => `
-    <div class="match-card" data-home="${match.home}" data-away="${match.away}" data-hour="${match.hour}">
-      <div class="card-thumb">
-        <div class="card-poster" style="background-image:url('https://tse2.mm.bing.net/th?q=${encodeURIComponent(match.home+' vs '+match.away)}+world+cup+2026&w=400&h=225&c=7')"></div>
-        <div class="card-poster-overlay"></div>
-        <div class="badge-time">🕒 ${match.hour}</div>
-        <div class="badge-channels">📺 ${match.channels}</div>
+  container.innerHTML = todayMatches.map(match => {
+    const status = getMatchStatus(match);
+    const isFinished = status.text === "Terminé";
+    const homeFlag = getFlag(match.home);
+    const awayFlag = getFlag(match.away);
+    
+    return `
+      <div class="match-card ${isFinished ? 'finished' : ''}" data-match="${match.home}|${match.away}">
+        <div class="match-content">
+          <div class="match-time-ribbon">${match.hour}</div>
+          <div class="match-competition">FIFA WORLD CUP 2026 • GROUPE ${match.group}</div>
+          <div class="match-teams-modern">
+            <div class="team-modern">
+              <div class="team-flag">${homeFlag}</div>
+              <div class="team-name-modern">${match.home}</div>
+            </div>
+            <div class="vs-circle">VS</div>
+            <div class="team-modern">
+              <div class="team-flag">${awayFlag}</div>
+              <div class="team-name-modern">${match.away}</div>
+            </div>
+          </div>
+          <div class="match-details">
+            <div class="match-group">Groupe ${match.group} • ${match.hour}</div>
+            <div class="match-channel-badge">${match.channels}</div>
+          </div>
+        </div>
+        <div class="match-footer-modern">
+          <span>${status.icon} ${status.text}</span>
+          <button class="watch-button">► ${isFinished ? 'REPLAY' : 'REGARDER'}</button>
+        </div>
       </div>
-      <div class="card-body">
-        <div class="card-teams">${match.home}<span> vs </span>${match.away}</div>
-        <div class="card-info">Match • ${match.hour}</div>
-        <div class="card-cta">▶ Regarder</div>
-      </div>
-    </div>
-  `).join('');
+    `;
+  }).join('');
 
   document.querySelectorAll('#todayMatchesGrid .match-card').forEach(card => {
+    if (!card.classList.contains('finished')) {
+      card.addEventListener('click', (e) => {
+        if (!e.target.classList.contains('watch-button')) {
+          const matchData = card.getAttribute('data-match').split('|');
+          window.location.href = `watch.html?match=${encodeURIComponent(matchData[0] + ' vs ' + matchData[1])}`;
+        }
+      });
+      const btn = card.querySelector('.watch-button');
+      if (btn) {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const matchData = card.getAttribute('data-match').split('|');
+          window.location.href = `watch.html?match=${encodeURIComponent(matchData[0] + ' vs ' + matchData[1])}`;
+        });
+      }
+    }
+  });
+}
+
+// Rendu prochains matchs
+function renderUpcomingMatches() {
+  const container = document.getElementById('upcomingGrid');
+  const now = Date.now();
+  const upcomingMatches = allMatches
+    .filter(m => getMatchDateTime(m) > now && !isMatchFinished(m))
+    .sort((a, b) => getMatchDateTime(a) - getMatchDateTime(b))
+    .slice(0, 6);
+  
+  if (upcomingMatches.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">⏳</div><div>Aucun match à venir</div></div>`;
+    return;
+  }
+  
+  container.innerHTML = upcomingMatches.map(match => {
+    const matchDate = new Date(match.date);
+    const dateLabel = matchDate.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' });
+    const homeFlag = getFlag(match.home);
+    const awayFlag = getFlag(match.away);
+    return `
+      <div class="upcoming-card-modern" data-match="${match.home}|${match.away}">
+        <div class="upcoming-time-badge">
+          <div class="date">${dateLabel}</div>
+          <div class="hour">${match.hour}</div>
+        </div>
+        <div class="upcoming-info">
+          <div class="upcoming-teams">${homeFlag} ${match.home} 🆚 ${match.away} ${awayFlag}</div>
+          <div class="upcoming-channels">📺 ${match.channels} • Groupe ${match.group}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+  
+  document.querySelectorAll('#upcomingGrid .upcoming-card-modern').forEach(card => {
     card.addEventListener('click', () => {
-      const home = card.getAttribute('data-home');
-      const away = card.getAttribute('data-away');
-      window.location.href = `watch.html?match=${encodeURIComponent(home + ' vs ' + away)}`;
+      const matchData = card.getAttribute('data-match').split('|');
+      window.location.href = `watch.html?match=${encodeURIComponent(matchData[0] + ' vs ' + matchData[1])}`;
     });
   });
 }
 
+// Rendu programme complet
 function renderFullProgramme() {
   const container = document.getElementById('fullProgrammeContainer');
   const grouped = {};
@@ -590,21 +1125,49 @@ function renderFullProgramme() {
     const matches = grouped[date];
     const dateObj = new Date(date);
     const dateLabel = dateObj.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
-    html += `<div class="day-group"><div class="day-title">📅 ${dateLabel}</div>`;
-    matches.forEach(m => {
-      html += `<div class="match-row">
-        <div class="match-teams">${m.home}<span>vs</span>${m.away}</div>
-        <div style="display: flex; gap: 0.5rem; align-items: center;">
-          <span class="match-hour">${m.hour}</span>
-          <span class="match-channels">📺 ${m.channels}</span>
+    html += `
+      <div class="day-accordion">
+        <div class="day-header">
+          <span>📅 ${dateLabel}</span>
+          <span class="arrow">▼</span>
         </div>
-      </div>`;
+        <div class="day-matches">
+    `;
+    matches.forEach(m => {
+      const status = getMatchStatus(m);
+      html += `
+        <div class="programme-match-row" data-match="${m.home}|${m.away}">
+          <div class="programme-match-teams">${m.home}<span>vs</span>${m.away}</div>
+          <div class="programme-match-info">
+            <span>🕒 ${m.hour}</span>
+            <span>📺 ${m.channels}</span>
+            <span class="programme-status ${status.class}">${status.icon} ${status.text}</span>
+          </div>
+        </div>
+      `;
     });
-    html += `</div>`;
+    html += `</div></div>`;
   });
   container.innerHTML = html;
+  
+  // Accordion
+  document.querySelectorAll('.day-header').forEach(header => {
+    header.addEventListener('click', () => {
+      header.classList.toggle('open');
+      const matchesDiv = header.nextElementSibling;
+      matchesDiv.classList.toggle('open');
+    });
+  });
+  
+  document.querySelectorAll('.programme-match-row').forEach(row => {
+    row.addEventListener('click', () => {
+      const matchData = row.getAttribute('data-match').split('|');
+      window.location.href = `watch.html?match=${encodeURIComponent(matchData[0] + ' vs ' + matchData[1])}`;
+    });
+  });
 }
 
+// Navigation
 const livePage = document.getElementById('livePage');
 const programmePage = document.getElementById('programmePage');
 const tabs = document.querySelectorAll('.nav-tab');
@@ -615,6 +1178,8 @@ function switchPage(pageId) {
     livePage.style.display = 'block';
     programmePage.style.display = 'none';
     renderTodayMatches();
+    renderUpcomingMatches();
+    updateNextMatchCountdown();
   } else if (pageId === 'programme') {
     livePage.style.display = 'none';
     programmePage.style.display = 'block';
@@ -629,15 +1194,22 @@ function switchPage(pageId) {
 tabs.forEach(t => {
   t.addEventListener('click', () => switchPage(t.getAttribute('data-page')));
 });
-
 logoHome.addEventListener('click', () => switchPage('live'));
-document.getElementById('refreshBtn').addEventListener('click', () => {
-  if (livePage.style.display !== 'none') renderTodayMatches();
-  if (programmePage.style.display !== 'none') renderFullProgramme();
-});
 
+// Auto-refresh
+setInterval(() => {
+  if (livePage.style.display !== 'none') {
+    renderTodayMatches();
+    renderUpcomingMatches();
+    updateNextMatchCountdown();
+  }
+  if (programmePage.style.display !== 'none') renderFullProgramme();
+}, 60000);
+
+// Initialisation
 renderTodayMatches();
-renderFullProgramme();
+renderUpcomingMatches();
+updateNextMatchCountdown();
 switchPage('live');
 </script>
 </body>
